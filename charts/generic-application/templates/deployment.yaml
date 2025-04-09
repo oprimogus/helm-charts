@@ -6,7 +6,7 @@ metadata:
     app: {{ include "generic-application.name" . }}
 spec:
   {{- if not .Values.resources.autoscaling.enable }}
-      replicas: {{ .Values.resources.autoscaling.minReplicas }}
+  replicas: {{ .Values.resources.autoscaling.minReplicas }}
   {{- end }}
   selector:
     matchLabels:
@@ -29,7 +29,6 @@ spec:
             - name: {{ $key }}
               value: "{{ $value }}"
             {{- end }}
-
             {{- range .Values.secrets }}
             - name: {{ .name }}
               valueFrom:
@@ -37,6 +36,7 @@ spec:
                   name: {{ .secret }}
                   key: {{ .key }}
             {{- end }}
+          {{- end }}
           {{- if .Values.flags }}
           args:
             {{- range $key, $value := .Values.flags }}
@@ -50,7 +50,6 @@ spec:
             limits:
               cpu: {{ .Values.resources.max.cpu }}
               memory: {{ .Values.resources.max.memory }}
-
           {{- if .Values.health.liveness.enabled }}
           livenessProbe:
             httpGet:
@@ -62,7 +61,6 @@ spec:
             failureThreshold: {{ .Values.health.liveness.failureThreshold }}
             timeoutSeconds: {{ .Values.health.liveness.timeoutSeconds }}
           {{- end }}
-
           {{- if .Values.health.readiness.enabled }}
           readinessProbe:
             httpGet:
@@ -72,4 +70,5 @@ spec:
             periodSeconds: {{ .Values.health.readiness.periodSeconds }}
             successThreshold: {{ .Values.health.readiness.successThreshold }}
             failureThreshold: {{ .Values.health.readiness.failureThreshold }}
+            timeoutSeconds: {{ .Values.health.readiness.timeoutSeconds }}
           {{- end }}
