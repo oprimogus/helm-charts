@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "generic-application.fullname" . }}
+  name: {{ include "generic-application.name" . }}
   labels:
     app: {{ include "generic-application.name" . }}
 spec:

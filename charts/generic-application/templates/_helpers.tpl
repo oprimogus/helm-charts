@@ -10,7 +10,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "generic-application.fullname" -}}
+{{- define "generic-application.name" -}}
 {{- if .Values.name }}
 {{- .Values.name | trunc 63 | trimSuffix "-" }}
 {{- else }}
@@ -55,7 +55,7 @@ Create the name of the service account to use
 */}}
 {{- define "generic-application.serviceAccountName" -}}
 {{- if .Values.serviceAccount.create }}
-{{- default (include "generic-application.fullname" .) .Values.serviceAccount.name }}
+{{- default (include "generic-application.name" .) .Values.serviceAccount.name }}
 {{- else }}
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
