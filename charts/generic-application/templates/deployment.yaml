@@ -27,7 +27,7 @@ spec:
           env:
             {{- range $key, $value := .Values.env }}
             - name: {{ $key }}
-              value: "{{ $value }}"
+              value: {{ $value | quote }}
             {{- end }}
             {{- range .Values.secrets }}
             - name: {{ .name }}
@@ -70,5 +70,4 @@ spec:
             periodSeconds: {{ .Values.health.readiness.periodSeconds }}
             successThreshold: {{ .Values.health.readiness.successThreshold }}
             failureThreshold: {{ .Values.health.readiness.failureThreshold }}
-            timeoutSeconds: {{ .Values.health.readiness.timeoutSeconds }}
           {{- end }}
