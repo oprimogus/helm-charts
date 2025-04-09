@@ -5,7 +5,9 @@ metadata:
   labels:
     app: {{ include "generic-application.name" . }}
 spec:
-  replicas: {{ .Values.resources.autoscaling.minReplicas }}
+  {{- if not .Values.resources.autoscaling.enable }}
+      replicas: {{ .Values.resources.autoscaling.minReplicas }}
+  {{- end }}
   selector:
     matchLabels:
       app: {{ include "generic-application.name" . }}
@@ -14,9 +16,6 @@ spec:
       labels:
         app: {{ include "generic-application.name" . }}
     spec:
-      {{- if not .Values.resources.autoscaling.enable }}
-      replicas: {{ .Values.resources.autoscaling.minReplicas }}
-      {{- end }}
       containers:
         - name: {{ .Values.name }}
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
