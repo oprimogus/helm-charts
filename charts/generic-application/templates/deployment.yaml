@@ -27,7 +27,7 @@ spec:
           env:
             {{- range $key, $value := .Values.env }}
             - name: {{ $key }}
-              value: "{{ $value }}"
+              value: "{{ printf "%v" $value }}"
             {{- end }}
 
             {{- range .Values.secrets }}
@@ -37,7 +37,6 @@ spec:
                   name: {{ .secret }}
                   key: {{ .key }}
             {{- end }}
-          {{- end }}
           {{- if .Values.flags }}
           args:
             {{- range $key, $value := .Values.flags }}
