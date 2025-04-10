@@ -27,7 +27,7 @@ spec:
           env:
             {{- range $key, $value := .Values.env }}
             - name: {{ $key }}
-              value: {{ $value }}
+              value: "{{ $value }}"
             {{- end }}
 
             {{- range $key, $value := .Values.secrets }}
