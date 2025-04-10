@@ -34,8 +34,8 @@ spec:
             - name: {{ .name }}
               valueFrom:
                 secretKeyRef:
-                  name: {{ $key }}
-                  key: {{ $value }}
+                  name: {{ .secret }}
+                  key: {{ .key }}
             {{- end }}
           {{- end }}
           {{- if .Values.flags }}
