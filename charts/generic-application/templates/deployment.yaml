@@ -29,12 +29,13 @@ spec:
             - name: {{ $key }}
               value: {{ $value }}
             {{- end }}
-            {{- range .Values.secrets }}
+
+            {{- range $key, $value := .Values.secrets }}
             - name: {{ .name }}
               valueFrom:
                 secretKeyRef:
-                  name: {{ .secret }}
-                  key: {{ .key }}
+                  name: {{ $key }}
+                  key: {{ $value }}
             {{- end }}
           {{- end }}
           {{- if .Values.flags }}
