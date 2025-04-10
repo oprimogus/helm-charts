@@ -36,13 +36,12 @@ spec:
                   key: {{ .key }}
             {{- end }}
           {{- end }}
-          {{- if .Values.flags }}
+          {{- if .Values.args }}
           args:
-            {{- if .Values.args }}
             {{- range .Values.args }}
               - {{ . | quote }}
             {{- end }}
-            {{- end }}
+          {{- end }}
           resources:
             requests:
               cpu: {{ .Values.resources.min.cpu }}
