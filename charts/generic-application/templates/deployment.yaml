@@ -24,12 +24,10 @@ spec:
             - name: server
               containerPort: {{ .Values.port }}
           {{- if .Values.env }}
+          envFrom:
+          - configMapRef:
+              name: {{ include "generic-application.name" . }}-env
           env:
-            {{- range $key, $value := .Values.env }}
-            - name: {{ $key }}
-              value: {{ $value | quote }}
-            {{- end }}
-
             {{- range $key, $value := .Values.secrets }}
             - name: {{ .name }}
               valueFrom:
