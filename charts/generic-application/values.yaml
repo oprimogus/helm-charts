@@ -120,3 +120,12 @@ secrets: {}
 
 # Additional flags can be provided here if necessary.
 flags: {}
+
+# args to be used with app
+# Example usage
+# - tunnel
+# - --no-autoupdate
+# - run
+# - --token
+# - eyJh....
+args: {}

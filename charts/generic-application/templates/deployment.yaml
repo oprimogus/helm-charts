@@ -38,10 +38,11 @@ spec:
           {{- end }}
           {{- if .Values.flags }}
           args:
-            {{- range $key, $value := .Values.flags }}
-            - --{{ $key }}={{ $value }}
+            {{- if .Values.args }}
+            {{- range .Values.args }}
+              - {{ . | quote }}
             {{- end }}
-          {{- end }}
+            {{- end }}
           resources:
             requests:
               cpu: {{ .Values.resources.min.cpu }}
