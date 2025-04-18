@@ -25,11 +25,13 @@ spec:
                 name: {{ include "generic-application.name" . }}-env
           env:
             {{- range .Values.secrets }}
+            {{- if not .mountPath }}
             - name: {{ .name }}
               valueFrom:
                 secretKeyRef:
                   name: {{ .secret }}
                   key: {{ .key }}
+            {{- end }}
             {{- end }}
           {{- end }}
           volumeMounts:
@@ -37,6 +39,7 @@ spec:
             {{- if .mountPath }}
             - name: {{ .name | kebabcase }}
               mountPath: {{ .mountPath }}
+              subPath: {{ .key }}
               readOnly: true
             {{- end }}
             {{- end }}
