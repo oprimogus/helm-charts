@@ -115,9 +115,11 @@ env: {}
 #   - name: env-name-1
 #     secret: my-secret-1
 #     key: username
+#     mountPath: /app/test1.json -> If defined, create a mounted volume
 #   - name: env-name-2
 #     secret: my-secret-1
 #     key: password
+#     mountPath: /app/test2.json
 secrets: {}
 
 # Additional flags can be provided here if necessary.

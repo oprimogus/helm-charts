@@ -2,12 +2,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "generic-application.name" . }}-{{ .Values.environment }}
-  labels:
-    app: {{ include "generic-application.name" . }}-{{ .Values.environment }}
 spec:
-  {{- if not .Values.resources.autoscaling.enable }}
-  replicas: {{ .Values.resources.autoscaling.minReplicas }}
-  {{- end }}
+  replicas: 1
   selector:
     matchLabels:
       app: {{ include "generic-application.name" . }}-{{ .Values.environment }}
@@ -25,10 +21,10 @@ spec:
               containerPort: {{ .Values.port }}
           {{- if .Values.env }}
           envFrom:
-          - configMapRef:
-              name: {{ include "generic-application.name" . }}-env
+            - configMapRef:
+                name: {{ include "generic-application.name" . }}-env
           env:
-            {{- range $key, $value := .Values.secrets }}
+            {{- range .Values.secrets }}
             - name: {{ .name }}
               valueFrom:
                 secretKeyRef:
@@ -36,37 +32,19 @@ spec:
                   key: {{ .key }}
             {{- end }}
           {{- end }}
-          {{- if .Values.args }}
-          args:
-            {{- range .Values.args }}
-              - {{ . }}
+          volumeMounts:
+            {{- range .Values.secrets }}
+            {{- if .mountPath }}
+            - name: {{ .name | kebabcase }}
+              mountPath: {{ .mountPath }}
+              readOnly: true
             {{- end }}
-          {{- end }}
-          resources:
-            requests:
-              cpu: {{ .Values.resources.min.cpu }}
-              memory: {{ .Values.resources.min.memory }}
-            limits:
-              cpu: {{ .Values.resources.max.cpu }}
-              memory: {{ .Values.resources.max.memory }}
-          {{- if .Values.health.liveness.enabled }}
-          livenessProbe:
-            httpGet:
-              path: {{ .Values.health.liveness.path }}
-              port: {{ .Values.health.liveness.port }}
-            initialDelaySeconds: {{ .Values.health.liveness.initialDelaySeconds }}
-            periodSeconds: {{ .Values.health.liveness.periodSeconds }}
-            successThreshold: {{ .Values.health.liveness.successThreshold }}
-            failureThreshold: {{ .Values.health.liveness.failureThreshold }}
-            timeoutSeconds: {{ .Values.health.liveness.timeoutSeconds }}
-          {{- end }}
-          {{- if .Values.health.readiness.enabled }}
-          readinessProbe:
-            httpGet:
-              path: {{ .Values.health.readiness.path }}
-              port: {{ .Values.health.readiness.port }}
-            initialDelaySeconds: {{ .Values.health.readiness.initialDelaySeconds }}
-            periodSeconds: {{ .Values.health.readiness.periodSeconds }}
-            successThreshold: {{ .Values.health.readiness.successThreshold }}
-            failureThreshold: {{ .Values.health.readiness.failureThreshold }}
-          {{- end }}
+            {{- end }}
+      volumes:
+        {{- range .Values.secrets }}
+        {{- if .mountPath }}
+        - name: {{ .name | kebabcase }}
+          secret:
+            secretName: {{ .secret }}
+        {{- end }}
+        {{- end }}
