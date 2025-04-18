@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "generic-application.name" . }}
+  name: {{ include "generic-application.name" . }}-{{ .Values.environment }}
   labels:
-    app: {{ include "generic-application.name" . }}
+    app: {{ include "generic-application.name" . }}-{{ .Values.environment }}
 spec:
   {{- if not .Values.resources.autoscaling.enable }}
   replicas: {{ .Values.resources.autoscaling.minReplicas }}
   {{- end }}
   selector:
     matchLabels:
-      app: {{ include "generic-application.name" . }}
+      app: {{ include "generic-application.name" . }}-{{ .Values.environment }}
   template:
     metadata:
       labels:
-        app: {{ include "generic-application.name" . }}
+        app: {{ include "generic-application.name" . }}-{{ .Values.environment }}
     spec:
       containers:
         - name: {{ .Values.name }}

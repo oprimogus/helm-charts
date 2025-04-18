@@ -1,6 +1,8 @@
 # The name of the application
 name: generic-api
 
+# Environment of app: prd | dev | infra
+environment: infra
 # Image configuration for the container
 image: 
   # Repository where the image is stored

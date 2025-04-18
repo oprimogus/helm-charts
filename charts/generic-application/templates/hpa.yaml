@@ -2,12 +2,12 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ include "generic-application.name" . }}
+  name: {{ include "generic-application.name" . }}-{{ .Values.environment }}
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ include "generic-application.name" . }}
+    name: {{ include "generic-application.name" . }}-{{ .Values.environment }}
   minReplicas: {{ .Values.resources.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.resources.autoscaling.maxReplicas }}
   metrics:

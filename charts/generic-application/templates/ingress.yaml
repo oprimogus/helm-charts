@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "generic-application.name" . }}
+  name: {{ include "generic-application.name" . }}-{{ .Values.environment }}
   labels:
     {{- include "generic-application.labels" . | nindent 4 }}
   {{- if .Values.ingress.annotations }}
@@ -27,7 +27,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ include "generic-application.name" . }}
+                name: {{ include "generic-application.name" . }}-{{ .Values.environment }}
                 port:
                   number: {{ .Values.port }}
 {{- end }}
