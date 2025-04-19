@@ -29,5 +29,5 @@ spec:
               service:
                 name: {{ include "generic-application.name" . }}-{{ .Values.environment }}
                 port:
-                  number: 80
+                  number: http
 {{- end }}
