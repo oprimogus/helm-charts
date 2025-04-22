@@ -1,7 +1,8 @@
 apiVersion: apps/v1
 kind: Deployment
-annotations:
-    name: {{ include "generic-application.name" . }}-{{ .Values.environment }}
+metadata:
+  name: {{ include "generic-application.name" . }}-{{ .Values.environment }}
+  annotations:
     {{- with .Values.annotations }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
