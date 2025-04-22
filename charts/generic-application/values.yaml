@@ -11,6 +11,9 @@ image:
   pullPolicy: IfNotPresent
   # Tag/version of the image to use
   tag: latest
+  # If image is private
+  pullSecrets:
+    - ghcr-secret # Name of secret with data; secret MUST be of type kubernetes.io/dockerconfigjson
 
 # The port on which your application listens for incoming requests
 port: 3000
