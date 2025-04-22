@@ -15,6 +15,9 @@ image:
   pullSecrets:
     - ghcr-secret # Name of secret with data; secret MUST be of type kubernetes.io/dockerconfigjson
 
+# Annotations in metadata
+annotations: {}
+
 # The port on which your application listens for incoming requests
 port: 3000
 
