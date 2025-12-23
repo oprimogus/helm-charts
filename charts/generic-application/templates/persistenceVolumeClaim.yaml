@@ -1,0 +1,19 @@
+{{- if .Values.persistence.enabled }}
+{{- range .Values.persistence.volumes }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "generic-application.name" $ }}-{{ $.Values.environment }}-{{ .name }}
+spec:
+  accessModes:
+  {{- range .accessModes }}
+    - {{ . }}
+  {{- end }}
+  resources:
+    requests:
+      storage: {{ .size }}
+  {{- if .storageClassName }}
+  storageClassName: {{ .storageClass }}
+  {{- end }}
+{{- end }}
+{{- end }}
