@@ -61,11 +61,26 @@ spec:
               readOnly: true
             {{- end }}
             {{- end }}
+
+            {{- if .Values.persistence.enabled }}
+            {{- range .Values.persistence.volumes }}
+            - name: {{ .name | kebabcase }}
+              mountPath: {{ .path }}
+            {{- end }}
+            {{- end }}
       volumes:
         {{- range .Values.secrets }}
         {{- if .mountPath }}
         - name: {{ .name | kebabcase }}
           secret:
             secretName: {{ .secret }}
+        {{- end }}
+        {{- end }}
+
+        {{- if .Values.persistence.enabled }}
+        {{- range .Values.persistence.volumes }}
+        - name: {{ .name }}
+          persistentVolumeClaim:
+            claimName: {{ include "generic-application.name" $ }}-{{ $.Values.environment }}-{{ .name }}
         {{- end }}
         {{- end }}
