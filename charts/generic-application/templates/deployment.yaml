@@ -23,6 +23,10 @@ spec:
         - name: {{ . }}
         {{- end }}
       {{- end }}
+      {{- if .Values.initContainers.enabled }}
+      initContainers:
+      {{- toYaml .Values.initContainers.containers | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ .Values.name }}
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}

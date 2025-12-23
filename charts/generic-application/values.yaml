@@ -17,6 +17,29 @@ image:
   #   - ghcr-secret # Name of secret with data; secret MUST be of type kubernetes.io/dockerconfigjson
   pullSecrets: []
 
+# -- Init Containers
+# -- Example usage:
+# initContainers:
+#   enabled: true
+#   containers:
+#     - name: init-config
+#       image: busybox
+#       command: ["sh", "-c"]
+#       args:
+#         - |
+#           echo "$INIT_FILE_CONTENT" > /data/config.file
+#       env:
+#         - name: INIT_FILE_CONTENT
+#           value: |
+#             online-mode=false
+#             motd=Meu Server
+#       volumeMounts:
+#         - name: app-data
+#           mountPath: /data
+initContainers:
+  enabled: false
+  containers: []
+
 # -- Annotations in metadata
 annotations: {}
 
