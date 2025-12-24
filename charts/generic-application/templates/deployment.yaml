@@ -48,6 +48,8 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ include "generic-application.name" . }}-env
+          {{- end }}
+          {{- if .Values.secrets }}
           env:
             {{- range .Values.secrets }}
             {{- if not .mountPath }}
