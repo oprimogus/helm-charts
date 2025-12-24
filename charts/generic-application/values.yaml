@@ -74,7 +74,7 @@ resources:
 
 # -- Service configuration
 service:
-  enabled: true   # -- Define if the Service should be created
+  enabled: false   # -- Define if the Service should be created
   type: ClusterIP # -- Service type: ClusterIP | NodePort | LoadBalancer
   
   # -- Example usage:
