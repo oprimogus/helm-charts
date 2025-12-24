@@ -39,8 +39,11 @@ spec:
               cpu: {{ .Values.resources.max.cpu }}
               memory: {{ .Values.resources.max.memory }}
           ports:
-            - name: server
-              containerPort: {{ .Values.port }}
+            {{- range .Values.service.ports }}
+              - name: {{ .name }}
+                containerPort: {{ .targetPort }}
+                protocol: {{ .protocol | default "TCP" }}
+            {{- end }}
           {{- if .Values.env }}
           envFrom:
             - configMapRef:

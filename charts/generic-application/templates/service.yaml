@@ -1,12 +1,17 @@
+{{- if .Values.service.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
   name: {{ include "generic-application.name" . }}-{{ .Values.environment }}
 spec:
-  type: ClusterIP
+  type: {{ .Values.service.type }}
   selector:
     app: {{ include "generic-application.name" . }}-{{ .Values.environment }}
   ports:
-    - name: http
-      port: 80
-      targetPort: {{ .Values.port }}
+    {{- range .Values.service.ports }}
+    - name: {{ .name }}
+      port: {{ .port }}
+      targetPort: {{ .targetPort }}
+      protocol: {{ .protocol | default "TCP" }}
+    {{- end }}
+{{- end }}
