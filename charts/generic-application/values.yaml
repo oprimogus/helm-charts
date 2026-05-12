@@ -133,3 +133,10 @@ persistence:
   #     storageClass: "local"  # -- StorageClass name
   #     accessModes: ["ReadWriteOnce"]
   volumes: []
+
+scheduling:
+  enabled: false
+  strategy: default
+  antiAffinity: true
+  label: ""
+  value: ""
