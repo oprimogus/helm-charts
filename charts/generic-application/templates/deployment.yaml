@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "generic-application.name" . }}-{{ .Values.environment }}
+  name: {{ include "generic-application.name" . }}{{ if .Values.environment }}-{{ .Values.environment }}{{ end }}
   annotations:
     {{- with .Values.annotations }}
     {{- toYaml . | nindent 4 }}
@@ -11,37 +11,36 @@ spec:
   revisionHistoryLimit: 2
   selector:
     matchLabels:
-      app: {{ include "generic-application.name" . }}-{{ .Values.environment }}
+      app: {{ include "generic-application.name" . }}{{ if .Values.environment }}-{{ .Values.environment }}{{ end }}
   template:
     metadata:
       labels:
-        app: {{ include "generic-application.name" . }}-{{ .Values.environment }}
+        app: {{ include "generic-application.name" . }}{{ if .Values.environment }}-{{ .Values.environment }}{{ end }}
     spec:
-        {{- if .Values.scheduling.enabled }}
-        affinity:
+      {{- if .Values.scheduling.enabled }}
+      affinity:
         {{- if and .Values.scheduling.label .Values.scheduling.value }}
         nodeAffinity:
-            preferredDuringSchedulingIgnoredDuringExecution:
+          preferredDuringSchedulingIgnoredDuringExecution:
             - weight: 100
-            preference:
+              preference:
                 matchExpressions:
-                - key: {{ .Values.scheduling.label | quote }}
-                operator: In
-                values:
-                - {{ .Values.scheduling.value | quote }}
+                  - key: {{ .Values.scheduling.label | quote }}
+                    operator: In
+                    values:
+                      - {{ .Values.scheduling.value | quote }}
         {{- end }}
         {{- if .Values.scheduling.antiAffinity }}
         podAntiAffinity:
-            preferredDuringSchedulingIgnoredDuringExecution:
+          preferredDuringSchedulingIgnoredDuringExecution:
             - weight: 100
-            podAffinityTerm:
+              podAffinityTerm:
                 labelSelector:
-                matchLabels:
-                    {{- /* Ajuste conforme a label que você usa no selector */ -}}
-                    app: {{ .Values.name }}
+                  matchLabels:
+                    app: {{ include "generic-application.name" . }}{{ if .Values.environment }}-{{ .Values.environment }}{{ end }}
                 topologyKey: "kubernetes.io/hostname"
         {{- end }}
-        {{- end }}
+      {{- end }}
       {{- if .Values.image.pullSecrets }}
       imagePullSecrets:
         {{- range .Values.image.pullSecrets }}
@@ -65,14 +64,14 @@ spec:
               memory: {{ .Values.resources.max.memory }}
           ports:
             {{- range .Values.service.ports }}
-              - name: {{ .name }}
-                containerPort: {{ .targetPort }}
-                protocol: {{ .protocol | default "TCP" }}
+            - name: {{ .name }}
+              containerPort: {{ .targetPort }}
+              protocol: {{ .protocol | default "TCP" }}
             {{- end }}
           {{- if .Values.env }}
           envFrom:
             - configMapRef:
-                name: {{ include "generic-application.name" . }}-env
+                name: {{ include "generic-application.name" . }}{{ if .Values.environment }}-{{ .Values.environment }}{{ end }}-env
           {{- end }}
           {{- if .Values.secrets }}
           env:
@@ -113,8 +112,8 @@ spec:
 
         {{- if .Values.persistence.enabled }}
         {{- range .Values.persistence.volumes }}
-        - name: {{ .name }}
+        - name: {{ .name | kebabcase }}
           persistentVolumeClaim:
-            claimName: {{ include "generic-application.name" $ }}-{{ $.Values.environment }}-{{ .name }}
+            claimName: {{ .existingClaim | default $.Values.persistence.existingClaim | default (printf "%s%s-%s" (include "generic-application.name" $) (ternary (printf "-%s" $.Values.environment) "" (not (empty $.Values.environment))) .name) }}
         {{- end }}
         {{- end }}

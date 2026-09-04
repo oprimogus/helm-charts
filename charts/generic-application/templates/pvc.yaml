@@ -1,9 +1,11 @@
 {{- if .Values.persistence.enabled }}
 {{- range .Values.persistence.volumes }}
+{{- if not (or .existingClaim $.Values.persistence.existingClaim) }}
+---
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ include "generic-application.name" $ }}-{{ $.Values.environment }}-{{ .name }}
+  name: {{ include "generic-application.name" $ }}{{ if $.Values.environment }}-{{ $.Values.environment }}{{ end }}-{{ .name }}
 spec:
   accessModes:
   {{- range .accessModes }}
@@ -12,8 +14,9 @@ spec:
   resources:
     requests:
       storage: {{ .size }}
-  {{- if .storageClassName }}
+  {{- if .storageClass }}
   storageClassName: {{ .storageClass }}
   {{- end }}
+{{- end }}
 {{- end }}
 {{- end }}

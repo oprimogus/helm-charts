@@ -2,11 +2,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "generic-application.name" . }}-{{ .Values.environment }}
+  name: {{ include "generic-application.name" . }}{{ if .Values.environment }}-{{ .Values.environment }}{{ end }}
 spec:
   type: {{ .Values.service.type }}
   selector:
-    app: {{ include "generic-application.name" . }}-{{ .Values.environment }}
+    app: {{ include "generic-application.name" . }}{{ if .Values.environment }}-{{ .Values.environment }}{{ end }}
   ports:
     {{- range .Values.service.ports }}
     - name: {{ .name }}

@@ -2,7 +2,7 @@
 name: generic-application
 
 # -- Environment of app: prd | dev | infra
-environment: infra
+environment: ""
 
 # -- Annotations to be added to the metadata
 annotations: {}
@@ -125,6 +125,7 @@ args: {}
 # -- Persistence and volume configuration
 persistence:
   enabled: false               # -- Enable or disable persistent storage
+  existingClaim: ""            # -- Existing PVC name to use for persistence
   # -- Example usage:
   # volumes:
   #   - name: "data"           # -- Volume name
