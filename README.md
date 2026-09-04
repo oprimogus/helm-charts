@@ -4,7 +4,7 @@ Chart genérico para implantação de aplicações containerizadas no Kubernetes
 
 ---
 
-## 🛠️ Estrutura do Repositório
+## Estrutura do Repositório
 
 ```text
 .
@@ -24,11 +24,9 @@ Chart genérico para implantação de aplicações containerizadas no Kubernetes
 │   └── minecraft.yaml
 ├── index.yaml                  # Índice do repositório Helm Pages
 └── README.md
+```
 
-### Tópico 2: Tabela de Configuração (`values.yaml`)
-
-```markdown
-## ⚙️ Configuração (`values.yaml`)
+## values.yaml
 
 | Parâmetro | Tipo | Padrão | Descrição |
 | :--- | :--- | :--- | :--- |
@@ -63,7 +61,7 @@ Chart genérico para implantação de aplicações containerizadas no Kubernetes
 | `scheduling.enabled` | `boolean` | `false` | Ativa regras de agendamento nos nós. |
 | `scheduling.antiAffinity` | `boolean` | `true` | Evita que Pods da mesma aplicação sejam agendados no mesmo nó físico. |
 
-## 🔄 Fluxo de Desenvolvimento e Atualização do Chart
+## Fluxo de Desenvolvimento e Atualização do Chart
 
 Siga estas etapas sempre que precisar alterar templates ou adicionar novos parâmetros ao `values.yaml`.
 
@@ -74,13 +72,13 @@ Sempre incremente a versão no `charts/generic-application/Chart.yaml` respeitan
 version: 0.1.2 # Incremente esta versão
 ```
 
-## Validar a Sintaxe (Lint)
+## 2. Validar a Sintaxe (Lint)
 
 ```bash
 helm lint charts/generic-application
 ```
 
-## Testar a Renderização dos Templates
+### 3. Testar a Renderização dos Templates
 
 ```bash
 # Teste usando o arquivo local de testes
@@ -90,18 +88,18 @@ helm template generic-application ./charts/generic-application -f ./tests/minecr
 helm template generic-application ./charts/generic-application -f ../flyfood-gitops/k8s/apps/flyfood-api/dev-values.yaml --debug
 ```
 
-## Empacotar o Chart
+### 4. Empacotar o Chart
 
 ```bash
 helm package ./charts/generic-application
 ```
 
-# Atualizar o Index
+### 5. Atualizar o Index
 
 ```bash
 helm repo index . --url https://oprimogus.github.io/helm-charts
 ```
 
-# Deploy
+### 6. Deploy
 
 Faça commits e push para o repositório para atualizar o index e os charts disponíveis.
