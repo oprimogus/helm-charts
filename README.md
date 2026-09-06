@@ -59,21 +59,13 @@ helm lint ./charts/generic-application
 helm template generic-application ./charts/generic-application -f ./tests/minecraft.yaml --debug
 ```
 
-### 4. Package the Chart
-
-Run the command at the root of the repository to generate the `.tgz` archive:
-
-```bash
-helm package ./charts/generic-application
-```
-
-### 5. Update the repository index
+### 4. Update the repository index
 
 ```bash
 helm repo index . --url https://oprimogus.github.io/helm-charts
 ```
 
-### 6. Publish changes
+### 5. Publish changes
 
 ```bash
 git add .

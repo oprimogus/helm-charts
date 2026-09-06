@@ -18,6 +18,33 @@ image:
   #   - ghcr-secret         # -- Name of secret with data; MUST be of type kubernetes.io/dockerconfigjson
   pullSecrets: []
 
+# -- Sidecars
+sidecars: {}
+#  - name: sidecar1
+#    image:
+#      repository:
+#      tag:
+#      pullPolicy:
+#    resources:
+#      min:
+#        cpu: 250m
+#        memory: 100m
+#      max:
+#        cpu: 500m
+#        memory: 250
+#      autoscaling:
+#        enable: false
+#    secrets:
+#       - name: SECRET_KEY
+#         secret: playitgg
+#         key: secretKey
+#
+#
+#
+#
+#
+#
+
 # -- Init Containers configuration
 initContainers:
   enabled: false   # -- Enable or disable Init Containers
@@ -97,6 +124,17 @@ ingress:
   # annotations: 
   #   kubernetes.io/ingress.class: nginx
   annotations: {}
+
+# -- HTTPRoute resource configuration (Gateway API)
+httpRoute:
+  enabled: false               # -- Enable or disable HTTPRoute resource
+  gatewayName: traefik-gateway # -- Name of the parent Gateway
+  gatewayNamespace: traefik    # -- Namespace of the parent Gateway (leave blank if same namespace)
+  sectionName: ""              # -- Specific listener section name on the Gateway (optional)
+  host: ""                     # -- Hostname for routing
+  path: /                      # -- Base path for routing
+  port: 80                     # -- Target service port number
+  annotations: {}              # -- Additional annotations for HTTPRoute
 
 # -- Environment variables to be injected into the container
 # -- Example usage:

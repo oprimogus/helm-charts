@@ -101,19 +101,52 @@ spec:
               mountPath: {{ .path }}
             {{- end }}
             {{- end }}
+        {{- range .Values.sidecars }}
+        - name: {{ .name }}
+          image: {{ .image.repository }}:{{ .image.tag }}
+          imagePullPolicy: {{ .image.pullPolicy }}
+          resources:
+            requests:
+              cpu: {{ .resources.min.cpu }}
+              memory: {{ .resources.min.memory }}
+            limits:
+              cpu: {{ .resources.max.cpu }}
+              memory: {{ .resources.max.memory }}
+          {{- if and .service ( .service.enabled ) .service.ports }}
+          ports:
+            {{- range .service.ports }}
+            - name: {{ .name }}
+              containerPort: {{ .targetPort }}
+              protocol: {{ .protocol | default "TCP" }}
+            {{- end }}
+          {{- end }}
+          {{- if .secrets }}
+          env:
+            {{- range .secrets }}
+            {{- if not .mountPath }}
+            - name: {{ .name }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .secret }}
+                  key: {{ .key }}
+            {{- end }}
+            {{- end }}
+          {{- end }}
+          volumeMounts:
+            {{- range .secrets }}
+            {{- if .mountPath }}
+            - name: {{ .name | kebabcase }}
+              mountPath: {{ .mountPath }}
+              subPath: {{ .key }}
+              readOnly: true
+            {{- end }}
+            {{- end }}
       volumes:
-        {{- range .Values.secrets }}
+        {{- range .secrets }}
         {{- if .mountPath }}
         - name: {{ .name | kebabcase }}
           secret:
             secretName: {{ .secret }}
         {{- end }}
-        {{- end }}
-
-        {{- if .Values.persistence.enabled }}
-        {{- range .Values.persistence.volumes }}
-        - name: {{ .name | kebabcase }}
-          persistentVolumeClaim:
-            claimName: {{ .existingClaim | default $.Values.persistence.existingClaim | default (printf "%s%s-%s" (include "generic-application.name" $) (ternary (printf "-%s" $.Values.environment) "" (not (empty $.Values.environment))) .name) }}
         {{- end }}
         {{- end }}

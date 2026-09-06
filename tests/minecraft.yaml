@@ -1,6 +1,4 @@
 name: minecraft
-environment: ""
-
 image:
   repository: itzg/minecraft-server
   tag: java25-graalvm
@@ -8,8 +6,8 @@ image:
 
 resources:
   min:
-    cpu: 1000m
-    memory: 2Gi
+    cpu: 500m
+    memory: 1Gi
   max:
     cpu: 4000m
     memory: 8Gi
@@ -17,35 +15,28 @@ resources:
     enable: false
 
 env:
-   MEMORY: 4G
-   MAX_MEMORY: 8G
-   TYPE: FABRIC
-   MODRINTH_PROJECTS: |
-     fabric-api
-     fallingtree
-     cloth-config
-     skinsrestorer
-   EULA: true
-   ONLINE_MODE: false
-   SERVER_NAME: oprimoguslab-server
-   SERVER_PORT: 25565
-   # configs uso server
-   SPAWN_PROTECTION: 0
-   MAX_PLAYERS: 20
-   ALLOW_NETHER: true
-   ANNOUNCE_PLAYER_ACHIEVEMENTS: true
-   SNOOPER_ENABLED: false
+    MEMORY: 4G
+    MAX_MEMORY: 8G
+    TYPE: FABRIC
+    MODRINTH_PROJECTS: |
+      fabric-api
+      fallingtree
+      cloth-config
+      skinsrestorer
+    EULA: true
+    ONLINE_MODE: false
+    SERVER_NAME: oprimoguslab-server
+    SERVER_PORT: 25565
+    # configs uso server
+    SPAWN_PROTECTION: 0
+    MAX_PLAYERS: 20
+    ALLOW_NETHER: true
+    ANNOUNCE_PLAYER_ACHIEVEMENTS: true
+    SNOOPER_ENABLED: false
 
 persistence:
   enabled: true
   existingClaim: minecraft-data
-  volumes:
-    - name: server-data
-      path: /data
-      size: 10Gi
-      storageClass: longhorn
-      accessModes:
-        - ReadWriteOnce
 
 service:
   enabled: true
@@ -55,3 +46,31 @@ service:
       port: 25565
       targetPort: 25565
       protocol: TCP
+ingress:
+  enabled: true
+httpRoute:
+  enabled: true
+
+sidecars:
+  - name: playitgg
+    environment: prd
+    
+    image:
+      repository: ghcr.io/playit-cloud/playit-agent
+      tag: 0.16
+      pullPolicy: IfNotPresent
+    
+    resources:
+      min:
+        cpu: 200m
+        memory: 128Mi
+      max:
+        cpu: 400m
+        memory: 256Mi
+      autoscaling:
+        enable: false
+    
+    secrets:
+      - name: SECRET_KEY
+        secret: playitgg
+        key: secretKey
