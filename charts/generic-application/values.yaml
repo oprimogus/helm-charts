@@ -152,7 +152,11 @@ flags: {}
 # -- Example usage:
 # args:
 #  - --port=3000
-args: {}
+args: []
+
+# args:
+#  - --port=3000
+command: []
 
 # -- Persistence and volume configuration
 persistence:
