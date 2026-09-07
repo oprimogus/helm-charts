@@ -2,23 +2,30 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "generic-application.name" . }}{{ if .Values.environment }}-{{ .Values.environment }}{{ end }}
+
+  {{- with .Values.annotations }}
   annotations:
-    {{- with .Values.annotations }}
     {{- toYaml . | nindent 4 }}
-    {{- end }}
+  {{- end }}
+
 spec:
   replicas: 1
   revisionHistoryLimit: 2
+
   selector:
     matchLabels:
       app: {{ include "generic-application.name" . }}{{ if .Values.environment }}-{{ .Values.environment }}{{ end }}
+
   template:
     metadata:
       labels:
         app: {{ include "generic-application.name" . }}{{ if .Values.environment }}-{{ .Values.environment }}{{ end }}
+
     spec:
+
       {{- if .Values.scheduling.enabled }}
       affinity:
+
         {{- if and .Values.scheduling.label .Values.scheduling.value }}
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -30,6 +37,7 @@ spec:
                     values:
                       - {{ .Values.scheduling.value | quote }}
         {{- end }}
+
         {{- if .Values.scheduling.antiAffinity }}
         podAntiAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
@@ -38,23 +46,33 @@ spec:
                 labelSelector:
                   matchLabels:
                     app: {{ include "generic-application.name" . }}{{ if .Values.environment }}-{{ .Values.environment }}{{ end }}
-                topologyKey: "kubernetes.io/hostname"
+                topologyKey: kubernetes.io/hostname
         {{- end }}
+
       {{- end }}
+
       {{- if .Values.image.pullSecrets }}
       imagePullSecrets:
         {{- range .Values.image.pullSecrets }}
         - name: {{ . }}
         {{- end }}
       {{- end }}
+
       {{- if .Values.initContainers.enabled }}
       initContainers:
-      {{- toYaml .Values.initContainers.containers | nindent 8 }}
+        {{- toYaml .Values.initContainers.containers | nindent 8 }}
       {{- end }}
+
       containers:
+
+        # ============================================================
+        # APPLICATION
+        # ============================================================
+
         - name: {{ .Values.name }}
           image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+
           resources:
             requests:
               cpu: {{ .Values.resources.min.cpu }}
@@ -62,17 +80,22 @@ spec:
             limits:
               cpu: {{ .Values.resources.max.cpu }}
               memory: {{ .Values.resources.max.memory }}
+
+          {{- if .Values.service.ports }}
           ports:
             {{- range .Values.service.ports }}
             - name: {{ .name }}
               containerPort: {{ .targetPort }}
               protocol: {{ .protocol | default "TCP" }}
             {{- end }}
+          {{- end }}
+
           {{- if .Values.env }}
           envFrom:
             - configMapRef:
                 name: {{ include "generic-application.name" . }}{{ if .Values.environment }}-{{ .Values.environment }}{{ end }}-env
           {{- end }}
+
           {{- if .Values.secrets }}
           env:
             {{- range .Values.secrets }}
@@ -85,7 +108,22 @@ spec:
             {{- end }}
             {{- end }}
           {{- end }}
+
+          {{- $hasApplicationVolumeMounts := false }}
+
+          {{- range .Values.secrets }}
+          {{- if .mountPath }}
+          {{- $hasApplicationVolumeMounts = true }}
+          {{- end }}
+          {{- end }}
+
+          {{- if and .Values.persistence.enabled .Values.persistence.volumes }}
+          {{- $hasApplicationVolumeMounts = true }}
+          {{- end }}
+
+          {{- if $hasApplicationVolumeMounts }}
           volumeMounts:
+
             {{- range .Values.secrets }}
             {{- if .mountPath }}
             - name: {{ .name | kebabcase }}
@@ -97,14 +135,24 @@ spec:
 
             {{- if .Values.persistence.enabled }}
             {{- range .Values.persistence.volumes }}
-            - name: {{ .name | kebabcase }}
-              mountPath: {{ .path }}
+            - name: {{ .name }}
+              mountPath: {{ .mountPath }}
             {{- end }}
             {{- end }}
+
+          {{- end }}
+
+
+        # ============================================================
+        # SIDECARS
+        # ============================================================
+
         {{- range .Values.sidecars }}
+
         - name: {{ .name }}
           image: {{ .image.repository }}:{{ .image.tag }}
           imagePullPolicy: {{ .image.pullPolicy }}
+
           resources:
             requests:
               cpu: {{ .resources.min.cpu }}
@@ -112,7 +160,8 @@ spec:
             limits:
               cpu: {{ .resources.max.cpu }}
               memory: {{ .resources.max.memory }}
-          {{- if and .service ( .service.enabled ) .service.ports }}
+
+          {{- if and .service .service.enabled .service.ports }}
           ports:
             {{- range .service.ports }}
             - name: {{ .name }}
@@ -120,7 +169,18 @@ spec:
               protocol: {{ .protocol | default "TCP" }}
             {{- end }}
           {{- end }}
-          {{- if .secrets }}
+
+
+          # Secrets como ENV
+          {{- $hasSidecarEnv := false }}
+
+          {{- range .secrets }}
+          {{- if not .mountPath }}
+          {{- $hasSidecarEnv = true }}
+          {{- end }}
+          {{- end }}
+
+          {{- if $hasSidecarEnv }}
           env:
             {{- range .secrets }}
             {{- if not .mountPath }}
@@ -132,21 +192,91 @@ spec:
             {{- end }}
             {{- end }}
           {{- end }}
+
+
+          # Secrets como arquivos
+          {{- $hasSidecarVolumeMounts := false }}
+
+          {{- range .secrets }}
+          {{- if .mountPath }}
+          {{- $hasSidecarVolumeMounts = true }}
+          {{- end }}
+          {{- end }}
+
+          {{- if $hasSidecarVolumeMounts }}
           volumeMounts:
             {{- range .secrets }}
             {{- if .mountPath }}
-            - name: {{ .name | kebabcase }}
+            - name: secret-{{ $.Values.name | kebabcase }}-{{ .name | kebabcase }}
               mountPath: {{ .mountPath }}
               subPath: {{ .key }}
               readOnly: true
             {{- end }}
             {{- end }}
+          {{- end }}
+
+        {{- end }}
+
+
+      # ============================================================
+      # VOLUMES
+      # ============================================================
+
+      {{- $hasVolumes := false }}
+
+      {{- range .Values.secrets }}
+      {{- if .mountPath }}
+      {{- $hasVolumes = true }}
+      {{- end }}
+      {{- end }}
+
+      {{- range .Values.sidecars }}
+      {{- range .secrets }}
+      {{- if .mountPath }}
+      {{- $hasVolumes = true }}
+      {{- end }}
+      {{- end }}
+      {{- end }}
+
+      {{- if and .Values.persistence.enabled .Values.persistence.volumes }}
+      {{- $hasVolumes = true }}
+      {{- end }}
+
+      {{- if $hasVolumes }}
       volumes:
+
+        # Application Secrets
+        {{- range .Values.secrets }}
+        {{- if .mountPath }}
+        - name: secret-{{ .name | kebabcase }}
+          secret:
+            secretName: {{ .secret }}
+        {{- end }}
+        {{- end }}
+
+
+        # Sidecar Secrets
+        {{- range .Values.sidecars }}
+        {{- $sidecar := . }}
         {{- range .secrets }}
         {{- if .mountPath }}
-        - name: {{ .name | kebabcase }}
+        - name: secret-{{ $.Values.name | kebabcase }}-{{ .name | kebabcase }}
           secret:
             secretName: {{ .secret }}
         {{- end }}
         {{- end }}
         {{- end }}
+
+
+        # Application Persistence
+        {{- if .Values.persistence.enabled }}
+        {{- range .Values.persistence.volumes }}
+
+        - name: {{ .name }}
+          persistentVolumeClaim:
+            claimName: {{ if .existingClaim }}{{ .existingClaim }}{{ else }}{{ include "generic-application.name" $ }}{{ if $.Values.environment }}-{{ $.Values.environment }}{{ end }}-{{ .name }}{{ end }}
+
+        {{- end }}
+        {{- end }}
+
+      {{- end }}

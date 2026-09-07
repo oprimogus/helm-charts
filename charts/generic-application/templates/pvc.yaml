@@ -1,6 +1,6 @@
 {{- if .Values.persistence.enabled }}
 {{- range .Values.persistence.volumes }}
-{{- if not (or .existingClaim $.Values.persistence.existingClaim) }}
+{{- if not .existingClaim }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -8,9 +8,9 @@ metadata:
   name: {{ include "generic-application.name" $ }}{{ if $.Values.environment }}-{{ $.Values.environment }}{{ end }}-{{ .name }}
 spec:
   accessModes:
-  {{- range .accessModes }}
+    {{- range .accessModes }}
     - {{ . }}
-  {{- end }}
+    {{- end }}
   resources:
     requests:
       storage: {{ .size }}

@@ -33,11 +33,26 @@ env:
     ALLOW_NETHER: true
     ANNOUNCE_PLAYER_ACHIEVEMENTS: true
     SNOOPER_ENABLED: false
+  
+secrets:
+  - name: DB_PASSWORD        # -- Environment variable name
+    secret: my-secret-name   # -- K8s Secret name
+    key: password            # -- Key inside the Secret
+    mountPath: /app/pass.txt # -- Optional: mount secret as a file
 
 persistence:
   enabled: true
-  existingClaim: minecraft-data
+  volumes:
+    - name: existing-data
+      existingClaim: test-existing-pvc
+      mountPath: /existing-data
 
+    - name: new-pvc
+      size: 10Gi
+      mountPath: /data
+      storageClass: longhorn
+      accessModes:
+        - ReadWriteOnce
 service:
   enabled: true
   type: ClusterIP

@@ -38,12 +38,6 @@ sidecars: {}
 #       - name: SECRET_KEY
 #         secret: playitgg
 #         key: secretKey
-#
-#
-#
-#
-#
-#
 
 # -- Init Containers configuration
 initContainers:
@@ -163,15 +157,16 @@ args: {}
 # -- Persistence and volume configuration
 persistence:
   enabled: false               # -- Enable or disable persistent storage
-  existingClaim: ""            # -- Existing PVC name to use for persistence
+  volumes: []
   # -- Example usage:
   # volumes:
   #   - name: "data"           # -- Volume name
   #     size: "10Gi"           # -- Required storage size
   #     mountPath: "/data"     # -- Path inside the container
   #     storageClass: "local"  # -- StorageClass name
-  #     accessModes: ["ReadWriteOnce"]
-  volumes: []
+  #     accessModes: 
+  #       - ReadWriteOnce
+  #  - existingClaim: "pvc-teste"
 
 scheduling:
   enabled: false

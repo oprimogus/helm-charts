@@ -59,13 +59,7 @@ helm lint ./charts/generic-application
 helm template generic-application ./charts/generic-application -f ./tests/minecraft.yaml --debug
 ```
 
-### 4. Update the repository index
-
-```bash
-helm repo index . --url https://oprimogus.github.io/helm-charts
-```
-
-### 5. Publish changes
+### 4. Publish changes
 
 ```bash
 git add .
