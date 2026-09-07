@@ -248,7 +248,7 @@ spec:
         # Application Secrets
         {{- range .Values.secrets }}
         {{- if .mountPath }}
-        - name: secret-{{ .name | kebabcase }}
+        - name: {{ .name | kebabcase }}
           secret:
             secretName: {{ .secret }}
         {{- end }}
@@ -260,7 +260,7 @@ spec:
         {{- $sidecar := . }}
         {{- range .secrets }}
         {{- if .mountPath }}
-        - name: secret-{{ $.Values.name | kebabcase }}-{{ .name | kebabcase }}
+        - name: {{ $.Values.name | kebabcase }}-{{ .name | kebabcase }}
           secret:
             secretName: {{ .secret }}
         {{- end }}

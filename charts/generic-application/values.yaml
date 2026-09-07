@@ -166,7 +166,9 @@ persistence:
   #     storageClass: "local"  # -- StorageClass name
   #     accessModes: 
   #       - ReadWriteOnce
-  #  - existingClaim: "pvc-teste"
+  #  - name: existing-data
+  #    existingClaim: test-existing-pvc
+  #    mountPath: /existing-data
 
 scheduling:
   enabled: false
