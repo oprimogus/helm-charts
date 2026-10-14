@@ -3,6 +3,16 @@ entries:
   generic-application:
   - apiVersion: v2
     appVersion: 1.18.0
+    created: "2026-10-14T20:24:50.485215665Z"
+    description: A Helm chart for Kubernetes
+    digest: 323847c92b11487bfd4de9797e7e785eb073fe702a1d5c13db28b3b4f12a848e
+    name: generic-application
+    type: application
+    urls:
+    - https://github.com/oprimogus/helm-charts/releases/download/generic-application-0.1.9/generic-application-0.1.9.tgz
+    version: 0.1.9
+  - apiVersion: v2
+    appVersion: 1.18.0
     created: "2026-10-14T20:19:02.860439418Z"
     description: A Helm chart for Kubernetes
     digest: f9149654f440a82c806a490ec9755676c21403ca8849d121ccb8cf386abfe869
@@ -61,4 +71,4 @@ entries:
     urls:
     - https://github.com/oprimogus/helm-charts/releases/download/generic-application-0.1.2/generic-application-0.1.2.tgz
     version: 0.1.2
-generated: "2026-10-14T20:19:02.860452377Z"
+generated: "2026-10-14T20:24:50.485234944Z"
