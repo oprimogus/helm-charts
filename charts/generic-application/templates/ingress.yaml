@@ -27,5 +27,9 @@ spec:
               service:
                 name: {{ include "generic-application.name" . }}{{ if .Values.environment }}-{{ .Values.environment }}{{ end }}
                 port:
-                  name: http
+                  {{- if typeIs "int" .Values.ingress.port }}
+                  number: {{ .Values.ingress.port }}
+                  {{- else }}
+                  name: {{ .Values.ingress.port }}
+                  {{- end }}
 {{- end }}

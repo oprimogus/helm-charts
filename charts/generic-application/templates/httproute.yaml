@@ -18,6 +18,8 @@ spec:
       {{- if .Values.httpRoute.sectionName }}
       sectionName: {{ .Values.httpRoute.sectionName }}
       {{- end }}
+      kind: Gateway
+      group: gateway.networking.k8s.io
   hostnames:
     - {{ .Values.httpRoute.host }}
   rules:
@@ -28,4 +30,6 @@ spec:
       backendRefs:
         - name: {{ include "generic-application.name" . }}{{ if .Values.environment }}-{{ .Values.environment }}{{ end }}
           port: {{ .Values.httpRoute.port }}
+          weight: 1
+          kind: Service
 {{- end }}

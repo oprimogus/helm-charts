@@ -114,6 +114,7 @@ ingress:
   ingressClassName: traefik    # -- Ingress controller class (traefik, nginx, etc.)
   tls: false                   # -- Enable or disable TLS (SSL)
   tlsSecretName: ""            # -- Secret name containing the TLS certificate
+  port: http                   # -- Port as name(string) or number
   # -- Example usage:
   # annotations: 
   #   kubernetes.io/ingress.class: nginx
