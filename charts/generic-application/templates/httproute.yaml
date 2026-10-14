@@ -32,4 +32,5 @@ spec:
           port: {{ .Values.httpRoute.port }}
           weight: 1
           kind: Service
+          group: ''
 {{- end }}
